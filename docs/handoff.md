@@ -93,5 +93,15 @@ SDK retries are disabled and the timeout is 30 seconds. Invalid questions return
 
 ## Next Work
 
+The selected project is now a bootcamp study assistant, replacing the summer-house
+reservation idea. The updated scope is in `pre-session-check-in/pre-seed-questions.md`.
+The first task is to explain a bootcamp concept, provide a practical example, and
+ask one question to check understanding. Course-note references and quizzes with
+feedback are Demo Day goals. These are planned capabilities; the current `/ask`
+implementation remains the generic model endpoint described above.
+
+Adapt `/ask` to the study-assistant task, then add answers grounded in course notes
+and quiz feedback as the project develops.
+
 Review and merge the initial implementation through its pull request.
 Update this handoff after material changes to setup, behavior, or verification.

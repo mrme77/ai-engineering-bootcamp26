@@ -1,13 +1,17 @@
 # Pre-seed Questions
 
 ## 1. What does it do?
-It lets guests check availability and reserve a summer house for stays of at least seven consecutive nights.
+
+It helps me understand agentic AI engineering bootcamp concepts through clear explanations, practical examples, and questions that check my understanding. As the project develops, it will use my course notes to support its answers.
 
 ## 2. Who is it for?
-The primary user is the person organizing a summer trip for a family or group and looking to book the house for a week or longer.
+
+The primary user is me, a learner studying agentic AI engineering. It could later help other bootcamp learners review concepts and put them into practice.
 
 ## 3. What is the single most important question or task it must handle well first?
-It must determine whether the house is available for the guest's requested dates and accept a reservation only when the stay is at least seven nights and does not overlap another booking. This is the initial Session 1 `/ask` domain: collect the requested check-in and check-out dates, check the minimum stay and availability, then guide the guest through making the reservation.
+
+It must answer a question about a bootcamp concept clearly, give a practical example, and ask one follow-up question to check my understanding. This is the initial Session 1 `/ask` domain. For example: "What is retrieval-augmented generation (RAG), and when would I use it?" Answers should acknowledge uncertainty and must not claim to use course notes unless those notes are actually provided.
 
 ## 4. What would make you proud to demo on Demo Day?
-A guest enters dates for a summer stay, sees whether the house is available, and submits a reservation for seven or more nights. The system blocks stays shorter than a week and prevents overlapping reservations, then shows a clear confirmation for a successful booking.
+
+I ask about a difficult topic and receive a clear explanation with a practical example and references to the relevant course notes. I then complete a short quiz and receive feedback explaining what I understood and what to review next. If the notes do not contain enough information, the assistant says so rather than inventing a source.
