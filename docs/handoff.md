@@ -95,13 +95,25 @@ SDK retries are disabled and the timeout is 30 seconds. Invalid questions return
 
 The selected project is now a bootcamp study assistant, replacing the summer-house
 reservation idea. The updated scope is in `pre-session-check-in/pre-seed-questions.md`.
-The first task is to explain a bootcamp concept, provide a practical example, and
-ask one question to check understanding. Course-note references and quizzes with
-feedback are Demo Day goals. These are planned capabilities; the current `/ask`
-implementation remains the generic model endpoint described above.
+The intended benefit is a connected curriculum, saved learning progress, and
+targeted practice across sessions. Explanations and quizzes alone do not provide
+enough distinction from a general chat interface. The first milestone covers three
+bootcamp concepts: assess understanding, save results by concept, and recommend
+one next exercise based on those results. A returning session must reuse the
+saved history. Course-note references and review of recurring misconceptions are
+part of the Demo Day goal.
 
-Adapt `/ask` to the study-assistant task, then add answers grounded in course notes
-and quiz feedback as the project develops.
+The user also wants to explore a local LLM of approximately 30 billion parameters.
+The model and runtime are undecided. Check hardware, memory, quantization, context
+capacity, latency, and study-task quality before selecting them. Verify the full
+data flow before making local-only privacy claims. Keep retrieval and saved
+progress independent of the inference model.
+
+These are planned capabilities; the current `/ask` implementation remains the
+generic OpenRouter endpoint described above. First adapt it to explain a concept,
+give an example, and ask one understanding-check question. Then implement the
+assessment, persistence, and next-exercise milestone, add course-note grounding,
+and evaluate local inference.
 
 Review and merge the initial implementation through its pull request.
 Update this handoff after material changes to setup, behavior, or verification.
