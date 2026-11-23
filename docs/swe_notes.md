@@ -2,15 +2,15 @@
 
 Shipping a real AI service means building something other programs can call over the network. That service sits on top of several standard software components. This guide names them, explains what each one does, and shows how they fit together when building a typical endpoint like `POST /ask`.
 
-**How to use this guide:** Skim it once to get a mental map of the system, and use it as a reference whenever you encounter unfamiliar infrastructure or web terms. You do not need deep mastery of every piece right away—just a clear picture of how the machine fits together.
+**How to use this guide:** Skim it once to get a mental map of the system, and use it as a reference whenever you encounter unfamiliar infrastructure or web terms. You do not need deep mastery of every piece right away, just a clear picture of how the machine fits together.
 
 ## 1. The Big Picture: Client, Server, and a Contract
 
-Almost every web system has two sides: a client asks for something, and a server answers. The contract between them is the API—which URLs exist, what data you send, and what you get back.
+Almost every web system has two sides: a client asks for something, and a server answers. The contract between them is the API: which URLs exist, what data you send, and what you get back.
 
 - **Client:** The caller. During early development, this is often curl or a lightweight UI like Streamlit. In production, it can be a web frontend, a mobile app, or another service/agent.
 - **Server:** Your backend application (e.g., FastAPI). It listens on a network port, receives requests, calls an LLM provider when needed, and returns a response.
-- **Contract (API):** Agreed shapes—the path (`/ask`), HTTP method (POST), JSON request body, and JSON response. If either side breaks the contract, the system fails in predictable ways.
+- **Contract (API):** Agreed shapes: the path (`/ask`), HTTP method (POST), JSON request body, and JSON response. If either side breaks the contract, the system fails in predictable ways.
 
 ## 2. What is an API?
 
@@ -20,10 +20,10 @@ When building AI services, you typically sit on both sides: you consume upstream
 
 ## 3. What is a REST API?
 
-REST is a common architectural style for HTTP APIs. In practice, it means resources live at URL paths, interactions use standard HTTP methods, payloads use JSON, and each request stands alone (stateless—the server does not need a sticky session to understand an incoming `POST /ask` request).
+REST is a common architectural style for HTTP APIs. In practice, it means resources live at URL paths, interactions use standard HTTP methods, payloads use JSON, and each request stands alone (stateless: the server does not need a sticky session to understand an incoming `POST /ask` request).
 
 - **Resource / Path:** A URL path naming the action or entity (e.g., `/ask` or `/health`).
-- **Method:** The type of action—read, create, update, or delete.
+- **Method:** The type of action: read, create, update, or delete.
 - **Headers:** Request metadata (authentication keys, content types).
 - **Body:** The data payload sent with write/run requests (typically JSON).
 - **Status Code:** A short, machine-readable outcome (200 OK, 400 bad input, 500 server error).
@@ -46,13 +46,13 @@ REST is a common architectural style for HTTP APIs. In practice, it means resour
 
 **Status codes worth memorizing:**
 
-- **200** — OK (success)
-- **201** — Created
-- **400 / 422** — Bad request or schema validation error (client fault)
-- **401 / 403** — Unauthorized or forbidden (authentication/permissions)
-- **404** — Not found (unknown path)
-- **429** — Rate limited (too many requests)
-- **500** — Internal server error (avoid exposing raw stack traces; return a safe fallback response instead)
+- **200**: OK (success)
+- **201**: Created
+- **400 / 422**: Bad request or schema validation error (client fault)
+- **401 / 403**: Unauthorized or forbidden (authentication/permissions)
+- **404**: Not found (unknown path)
+- **429**: Rate limited (too many requests)
+- **500**: Internal server error (avoid exposing raw stack traces; return a safe fallback response instead)
 
 ## 6. JSON: The Lingua Franca
 
@@ -78,13 +78,13 @@ FastAPI is a Python web framework designed for building HTTP APIs quickly and cl
 
 - **Route / Endpoint:** The combination of a URL path and an HTTP method (e.g., `POST /ask`).
 - **Handler:** The Python function that executes when a specific route is called.
-- **Dependency:** Shared setup logic—such as reading an API key or opening a database connection—injected cleanly into handlers.
+- **Dependency:** Shared setup logic, such as reading an API key or opening a database connection: injected cleanly into handlers.
 
 In short, your core service logic is a handler behind `POST /ask` that validates incoming input, calls a model reliably, and returns a structured response.
 
 ## 9. Environment Variables and Secrets
 
-API keys and credentials must never be hardcoded or committed to version control. Store them in the runtime environment—using a gitignored `.env` file during local development, and secure environment settings on your hosting platform in production. Your application reads them at runtime via `os.getenv("OPENAI_API_KEY")`.
+API keys and credentials must never be hardcoded or committed to version control. Store them in the runtime environment, using a gitignored `.env` file during local development, and secure environment settings on your hosting platform in production. Your application reads them at runtime via `os.getenv("OPENAI_API_KEY")`.
 
 ## 10. Docker: Consistent Environments Everywhere
 
@@ -93,7 +93,7 @@ A container packages your application code together with its runtime and depende
 - **Image:** A read-only snapshot containing Python, your code, and installed packages. Built once, run anywhere.
 - **Container:** A live, running instance of an image that can be started, stopped, or replicated.
 
-Containerization eliminates "it works on my machine" issues—any cloud host that runs containers can run your exact setup.
+Containerization eliminates "it works on my machine" issues; any cloud host that runs containers can run your exact setup.
 
 ## 11. Deployment: From Localhost to Public URL
 
@@ -113,7 +113,7 @@ Keeping endpoints like `POST /ask` stateless (relying on the request payload rat
 As an AI service matures from a prototype into a production system, several supporting pieces come into play:
 
 - **Load Balancer:** Sits in front of multiple container instances and distributes incoming requests across them.
-- **Database:** Stores durable state—user profiles, conversation history, logs, or vector embeddings for retrieval.
+- **Database:** Stores durable state: user profiles, conversation history, logs, or vector embeddings for retrieval.
 - **Authentication (Auth):** Controls who can call your endpoints (API keys, JWTs, OAuth) to protect private data and paid model usage.
 - **Logs & Observability:** Tracks request latency, error rates, and token usage so you can debug failures and monitor costs.
 - **CI/CD:** Automated pipelines that run tests, evaluations, and deployments whenever code changes are pushed.
@@ -128,6 +128,6 @@ As an AI service matures from a prototype into a production system, several supp
 
 ## A Few Quick Questions to Tailor This Further
 
-- **Intended Audience / Use Case:** Where is this going—internal team onboarding docs, a personal reference/blog post, or documentation for a specific project?
+- **Intended Audience / Use Case:** Where is this going: internal team onboarding docs, a personal reference/blog post, or documentation for a specific project?
 - **Tech Stack Specificity:** Do you want to keep FastAPI, OpenAI, and Render as concrete examples, or make those completely vendor/framework-agnostic as well?
 - **Depth:** Are there any sections (like Docker or scaling) you'd like trimmed down further, or anything missing you want added?
