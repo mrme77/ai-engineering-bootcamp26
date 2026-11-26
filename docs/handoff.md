@@ -4,7 +4,14 @@
 
 `main.py` exports a FastAPI app. `GET /health` returns `{"status":"ok"}`.
 `POST /ask` accepts `{"question":"..."}`, calls OpenRouter once, and returns
-`{"answer":"...","model":"gpt-4o-mini"}`. Runtime dependencies are in
+`answer`, `model`, `tokens_used`, and `cost_usd`. Token count and USD cost are
+validated from OpenRouter's `usage.total_tokens` and `usage.cost`; missing,
+negative, or nonfinite accounting returns a safe 502. A call may still be charged
+when its response fails validation.
+
+`streamlit_app.py` provides a neon green question form, answers, and usage metrics.
+It calls `/ask` through `ask_client.py`; shared contracts live in `api_models.py`.
+`.streamlit/config.toml` contains the theme. Runtime dependencies are in
 `requirements.txt`; test dependencies are in `requirements-dev.txt`.
 
 The development machine runs macOS with Python 3.14.7 and Git 2.54.0.
@@ -48,7 +55,27 @@ curl -i http://127.0.0.1:8000/ask \
 Expected result: HTTP 200 and `{"status":"ok"}`. Interactive API documentation
 is at <http://127.0.0.1:8000/docs>.
 
+Start the UI from the repository root in another activated terminal:
+
+```zsh
+python -m streamlit run streamlit_app.py
+```
+
+Open <http://localhost:8501>. Set `ASK_API_URL` in the environment or root `.env`
+to change the backend; its default is `http://127.0.0.1:8000`. Keep deployed URLs
+private. The UI needs no provider credential and makes requests only on submission.
+
 ## Verification and Known Gaps
+
+On 2026-11-26, all 40 pytest tests passed after adding accounting and the UI.
+Browser checks at widths of 375, 768, and 1280 pixels found no horizontal overflow.
+The UI subsequently switched to Streamlit's wide layout at the user's request.
+Checks at 375, 768, 1280, and 1920 pixels confirmed that the question form expands
+with the browser window without horizontal overflow.
+The local question form was visually inspected; the success and error flows were
+verified with Streamlit AppTest and mocked HTTP responses. No paid provider call
+was made for this change. Render deployment and real-provider submission
+screenshots remain outstanding. Local browser artifacts are ignored by Git.
 
 On 2026-11-22, the health endpoint passed a live HTTP check. Direct ASGI checks
 also confirmed `/health` returns 200 and an unknown route returns 404.
@@ -92,6 +119,49 @@ SDK retries are disabled and the timeout is 30 seconds. Invalid questions return
 502, and provider timeouts return 504. Upstream error details are not exposed.
 
 ## Next Work
+
+### Week 1 submission review (2026-11-26)
+
+Folders `week1/` through `week5/` now hold weekly notes. The application remains
+at the repository root so existing imports and run commands still apply.
+`week1/README.md` tracks the supplied submission checklist; later weeks are
+placeholders pending their requirements.
+
+Repository inspection confirmed `.env` and `.env.local` are ignored, with only
+`.env.example` tracked among `.env` files. No tracked Render configuration,
+Streamlit UI, or live submission evidence was found during the initial review.
+Official starter-fork status, Render deployment,
+Maven submission, and wallet settings remain unverified. Tests were inspected
+but not rerun during this review; no paid provider requests were made.
+
+The user subsequently chose to retain OpenRouter. Usage/cost reporting and the
+Streamlit UI are now implemented, with tests for malformed accounting, zero-cost
+responses through the real SDK type, form submission, blank inputs, HTTP errors,
+transport errors, and invalid backend responses. No real keys are used by tests.
+Complete deployment and real-provider screenshot proof before pursuing the
+broader study-assistant scope below.
+
+The selected project is now a bootcamp study assistant, replacing the summer-house
+reservation idea. The updated scope is in `pre-session-check-in/pre-seed-questions.md`.
+The intended benefit is a connected curriculum, saved learning progress, and
+targeted practice across sessions. Explanations and quizzes alone do not provide
+enough distinction from a general chat interface. The first milestone covers three
+bootcamp concepts: assess understanding, save results by concept, and recommend
+one next exercise based on those results. A returning session must reuse the
+saved history. Course-note references and review of recurring misconceptions are
+part of the Demo Day goal.
+
+The user also wants to explore a local LLM of approximately 30 billion parameters.
+The model and runtime are undecided. Check hardware, memory, quantization, context
+capacity, latency, and study-task quality before selecting them. Verify the full
+data flow before making local-only privacy claims. Keep retrieval and saved
+progress independent of the inference model.
+
+These are planned capabilities; the current `/ask` implementation remains the
+generic OpenRouter endpoint described above. First adapt it to explain a concept,
+give an example, and ask one understanding-check question. Then implement the
+assessment, persistence, and next-exercise milestone, add course-note grounding,
+and evaluate local inference.
 
 Review and merge the initial implementation through its pull request.
 Update this handoff after material changes to setup, behavior, or verification.

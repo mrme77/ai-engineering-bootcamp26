@@ -4,7 +4,12 @@
 
 `docs/handoff.md` records setup, verification, known gaps, and next steps. Update it after material changes.
 
-`main.py` exports the FastAPI `app`, with `GET /health` and `POST /ask`. Runtime dependencies are in `requirements.txt`; test dependencies are in `requirements-dev.txt`. `tests/` contains pytest tests. `pre-session-check-in/` holds preparation notes. `.venv/` is the local, ignored environment. No static assets exist.
+`main.py` exports the FastAPI `app`, with `GET /health` and `POST /ask`.
+`api_models.py` holds shared validation contracts. `streamlit_app.py` calls the
+backend through `ask_client.py`; `.streamlit/config.toml` defines its neon green
+theme. Runtime dependencies are in `requirements.txt`; test dependencies are in
+`requirements-dev.txt`. `tests/` contains pytest tests. `week1/` through `week5/`
+hold weekly notes. `.venv/` is the local, ignored environment.
 
 ## Build, Test, and Development Commands
 
@@ -15,9 +20,11 @@ python3 -m venv .venv                # Create the environment if absent
 source .venv/bin/activate           # Activate it on macOS/zsh
 python -m pip install -r requirements.txt
 python -m uvicorn main:app --reload # Start the development server
+# In another terminal with the environment activated:
+python -m streamlit run streamlit_app.py
 ```
 
-No build step is required. With the server running, use `curl http://127.0.0.1:8000/health` to verify the health response. Interactive API documentation is available at `/docs`.
+No build step is required. With the server running, use `curl http://127.0.0.1:8000/health` to verify the health response. Interactive API documentation is available at `/docs`. The UI defaults to the local backend; set `ASK_API_URL` privately for deployment. Run Streamlit from the repository root to load the project theme. `/ask` returns `answer`, `model`, `tokens_used`, and `cost_usd` using OpenRouter's reported accounting.
 
 ## Coding Style & Naming Conventions
 
