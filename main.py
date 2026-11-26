@@ -6,8 +6,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from openai import APIError, APITimeoutError, OpenAI
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import ValidationError
 
+from api_models import AskRequest, AskResponse, ProviderUsage
 from credentials import get_api_key
 
 load_dotenv(Path(__file__).with_name(".env"))
@@ -15,20 +16,6 @@ load_dotenv(Path(__file__).with_name(".env"))
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
-
-
-class AskRequest(BaseModel):
-    """A question with surrounding whitespace removed."""
-
-    model_config = ConfigDict(str_strip_whitespace=True)
-    question: str = Field(min_length=1)
-
-
-class AskResponse(BaseModel):
-    """The generated answer and the public model name."""
-
-    answer: str
-    model: str = "gpt-4o-mini"
 
 
 @app.get("/health")
@@ -72,4 +59,14 @@ def ask(request: AskRequest) -> AskResponse:
     answer = completion.choices[0].message.content if completion.choices else None
     if not answer or not answer.strip():
         raise HTTPException(status_code=502, detail="The model returned no text answer.")
-    return AskResponse(answer=answer)
+    try:
+        usage = ProviderUsage.model_validate(
+            completion.usage.model_dump() if completion.usage is not None else None
+        )
+    except ValidationError as exc:
+        logger.warning("OpenRouter response contained missing or invalid usage accounting")
+        raise HTTPException(
+            status_code=502,
+            detail="The model returned missing or invalid usage accounting. The call may still have been charged.",
+        ) from exc
+    return AskResponse(answer=answer, tokens_used=usage.total_tokens, cost_usd=usage.cost)
